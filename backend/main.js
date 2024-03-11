@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 
 const app = express();
-const PORT = 3001; // or any other port you prefer
+const PORT = 3001;
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
@@ -19,7 +19,6 @@ app.use((req, res, next) => {
 app.post('/receive-location', (req, res) => {
   const { latitude, longitude } = req.body;
 
-  // Do something with the received location data, such as saving it to a database
   console.log('Received location data:', { latitude, longitude });
 
   // Create an object with received location data
@@ -37,7 +36,6 @@ app.post('/receive-location', (req, res) => {
 
     let existingData = [];
 
-    // Parse the existing data (or initialize as an empty array if file is empty or invalid JSON)
     if (data) {
         try {
           existingData = JSON.parse(data);
