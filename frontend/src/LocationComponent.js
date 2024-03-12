@@ -32,7 +32,7 @@ const LocationComponent = () => {
         // Check if latitude and longitude are available
         if (latitude !== null && longitude !== null) {
           // Make a fetch request to your backend API
-          const response = await fetch('http://localhost:3001/receive-location', {
+          const response = await fetch('https://users-location-map-backend.onrender.com/receive-location', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
