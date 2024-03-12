@@ -28,8 +28,8 @@
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Fetch location data from locationData.json
-    fetch('/backend/locationData.json')
+    // Fetch location data from API
+    fetch('https://users-location-map-backend.onrender.com/data')
       .then(response => response.json())
       .then(locations => {
         // Add markers for each location
