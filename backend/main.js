@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
+const cors = require('cors');
 
 const app = express();
 const PORT = 3001;
+app.use(cors());
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
