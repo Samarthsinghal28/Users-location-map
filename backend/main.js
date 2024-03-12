@@ -38,6 +38,20 @@ app.post('/receive-location', async (req, res) => {
   }
 });
 
+
+app.get('/data', async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT * FROM location_data');
+    const data = result.rows;
+    client.release();
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
