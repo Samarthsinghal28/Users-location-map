@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const fs = require('fs');
+const { Pool } = require('pg');
 
 const app = express();
 const PORT = 3001;
@@ -8,62 +8,32 @@ const PORT = 3001;
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
-// Middleware to enable CORS
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-  });
+// PostgreSQL connection configuration
+const pool = new Pool({
+  user: 'location_aw9a_user',
+  host: 'dpg-cno2gaacn0vc73e6jh60-a',
+  database: 'location_aw9a',
+  password: 'NWGQ5eU4MahxERi4KJ1q41nhGFBg2Ju4',
+  port: 5432, // Default PostgreSQL port
+});
 
 // Route to handle incoming location data
-app.post('/receive-location', (req, res) => {
+app.post('/receive-location', async (req, res) => {
   const { latitude, longitude } = req.body;
 
   console.log('Received location data:', { latitude, longitude });
 
-  // Create an object with received location data
-  const locationData = { latitude, longitude };
-
-  // Convert the object to JSON format
-  const jsonData = JSON.stringify(locationData);
-
-  fs.readFile('locationData.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading location data from file:', err);
-      res.status(500).json({ error: 'Failed to read location data from file' });
-      return;
-    }
-
-    let existingData = [];
-
-    if (data) {
-        try {
-          existingData = JSON.parse(data);
-        } catch (parseError) {
-          console.error('Error parsing existing data from file:', parseError);
-          res.status(500).json({ error: 'Failed to parse existing data from file' });
-          return;
-        }
-      }
-  
-      // Add the new location data to the existing array
-      existingData.push(locationData);
-  
-      // Convert the combined data to JSON format
-      const jsonData = JSON.stringify(existingData);
-  
-      // Write the JSON data back to the file
-      fs.writeFile('locationData.json', jsonData, (writeErr) => {
-        if (writeErr) {
-          console.error('Error writing location data to file:', writeErr);
-          res.status(500).json({ error: 'Failed to save location data' });
-        } else {
-          console.log('Location data saved to file');
-          res.status(200).json({ message: 'Location data saved successfully' });
-        }
-      });
-    });
-
+  try {
+    // Insert the location data into the database
+    const query = 'INSERT INTO location_data (latitude, longitude) VALUES ($1, $2)';
+    await pool.query(query, [latitude, longitude]);
+    
+    console.log('Location data saved to database');
+    res.status(200).json({ message: 'Location data saved successfully' });
+  } catch (error) {
+    console.error('Error saving location data:', error);
+    res.status(500).json({ error: 'Failed to save location data' });
+  }
 });
 
 // Start the server
